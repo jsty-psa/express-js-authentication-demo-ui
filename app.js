@@ -34,6 +34,11 @@ app.use(cors());
 //   credentials: true,
 // }));
 
+const individual_id_type = {
+	'PCN': 'VID',
+	'AlyasPSN': 'VID',
+};
+
 app.post('/request/otp/:pcn', async (req, res) => {
 	console.log('---- OTP Request (Start) ----');
 	try {
@@ -44,7 +49,6 @@ app.post('/request/otp/:pcn', async (req, res) => {
 		const partner_api_key = process.env.API_KEY;
 		const base_url = process.env.BASE_URL;
 		let otp_channel = [];
-		const request = req.body;
 		const otp_email = ['1', 'true', 't', 'yes', 'y', 'on'].includes(String(req.body.otp_email).toLowerCase());
 		const otp_phone = ['1', 'true', 't', 'yes', 'y', 'on'].includes(String(req.body.otp_phone).toLowerCase());
 
@@ -66,7 +70,7 @@ app.post('/request/otp/:pcn', async (req, res) => {
 			transactionID: transaction_id,
 			requestTime: get_current_time(),
 			individualId: pcn,
-			individualIdType: 'VID',
+			individualIdType: individual_id_type[req.body.individual_id_type],
 			otpChannel: otp_channel,
 		};
 	
@@ -97,7 +101,7 @@ app.post('/request/otp/:pcn', async (req, res) => {
 		const otp_response = await response.json();
 
 		let otp_result;
-		if(response.ok && !otp_response['error']) {
+		if(response.ok && !otp_response['errors'] && !otp_response['error']) {
 			otp_result = await decrypt_response(otp_response);	
 		}
 		else if(!response.ok) {
@@ -155,7 +159,7 @@ app.post('/authenticate', async (req, res) => {
 			},
 			consentObtained: true,
 			individualId: request.individual_id,
-			individualIdType: request.individual_id_type,
+			individualIdType: individual_id_type[req.body.individual_id_type],
 			request: {
 				timestamp: request_time,
 				otp: request.input_otp_value,
@@ -200,7 +204,10 @@ app.post('/authenticate', async (req, res) => {
 		const authentication_response = await response.json();
 
 		let authentication_result;
-		if(response.ok && !authentication_response['error']) {
+
+		console.log(`Authentication Reponse: ${authentication_response}\n`);
+
+		if(response.ok && !authentication_response['error'] && !authentication_response['errors']) {
 			authentication_result = await decrypt_response(authentication_response);	
 		}
 		else if(!response.ok) {
