@@ -153,9 +153,9 @@ app.post('/authenticate', async (req, res) => {
 			domainUri: base_url,
 			transactionID: transaction_id,
 			requestedAuth: {
-				otp: request.input_otp == 'on',
-				demo: request.input_demo == 'on',
-				bio: request.input_bio == 'on',
+				otp: request.input_otp,
+				demo: request.input_demo,
+				bio: request.input_bio,
 			},
 			consentObtained: true,
 			individualId: request.individual_id,
