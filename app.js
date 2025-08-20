@@ -139,7 +139,7 @@ app.post('/authenticate', async (req, res) => {
 		const misp_license_key = process.env.TSP_LICENSE_KEY;
 		const partner_api_key = process.env.API_KEY;
 		const base_url = process.env.BASE_URL;
-		const is_ekyc = ['1', 'true', 't', 'yes', 'y', 'on'].includes(request.input_ekyc)
+		const is_ekyc = ['1', 'true', 't', 'yes', 'y', 'on'].includes(request.input_ekyc) || request.input_ekyc;
 	
 		const ida_certificate_path = `./keys/${partner_id}/${partner_id}-IDAcertificate.cer`;
 		const partner_private_key_path = `./keys/${partner_id}/${partner_id}-partner-private-key.pem`;
